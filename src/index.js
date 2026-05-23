@@ -21,6 +21,10 @@ const server = http.createServer(async (req, res) => {
   const method = req.method;
 
   console.log(`📨 ${method} ${pathname}`);
+
+  // ===========================================
+  // MOSTRAR PAGINA PRINCIPAL CON CONDUCTORES Y VEHICULOS
+  // ===========================================
   if (method === "GET" && pathname === "/") {
     try {
       await showHome(req, res);
