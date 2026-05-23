@@ -1,12 +1,16 @@
+const url = require("url");
+const querystring = require("querystring");
 const path = require("path");
 const fs = require("fs");
+
 const {
   getvehicles,
   getVehiclesWithDrivers,
+  createVehicle,
 } = require("../models/vehiculoModel");
 
 function getHTMLFormVehicle() {
-  const filePath = path.join(__dirname, "views/vehiculos", "form.html");
+  const filePath = path.join(__dirname, "../views/vehiculos", "form.html");
   return fs.readFileSync(filePath, "utf8");
 }
 
@@ -100,12 +104,53 @@ async function showVehicles(req, res) {
     return;
   }
 }
-async function createVehicles() {
+
+async function getFormularioVehiculo(req, res) {
   try {
-  } catch (errro) {}
+    const template = getHTMLFormVehicle();
+    res.writeHead(200, {
+      "Content-Type": "text/html; charset=utf-8",
+    });
+    res.end(template);
+    return;
+  } catch (error) {
+    console.error("Error al obtener el formulario: ", error);
+    res.writeHead(404, { "Content-Type": "text/plain" });
+    res.end("Error interno del servidor");
+  }
+}
+async function createVehicles(req, res) {
+  try {
+    let body = "";
+    req.on("data", (chunk) => {
+      body += chunk.toString();
+    });
+    req.on("end", async () => {
+      const Vehiculo = querystring.parse(body);
+      await createVehicle(
+        Vehiculo.placa,
+        Vehiculo.marca,
+        Vehiculo.modelo,
+        Vehiculo.anio,
+        Vehiculo.color,
+        Vehiculo.ci,
+      );
+      res.writeHead(302, {
+        Location: "/",
+      });
+      res.end();
+    });
+    return;
+  } catch (error) {
+    console.error("Error al renderizar la página:", error);
+    res.writeHead(500, { "Content-Type": "text/plain" });
+    res.end("Error interno del servidor");
+  }
 }
 
 module.exports = {
   showVehicles,
   generarListaVehiculos,
+  createVehicles,
+  getFormularioVehiculo,
 };

@@ -10,7 +10,12 @@ const {
   AddNewDriver,
   getFormularioConductor,
 } = require("./controllers/conductorController");
-const { showVehicles } = require("./controllers/vehiculoController");
+const {
+  showVehicles,
+  getFormularioVehiculo,
+  createVehicles,
+} = require("./controllers/vehiculoController");
+const { createVehicle } = require("./models/vehiculoModel");
 
 //variables globales
 const PORT = 3002;
@@ -59,6 +64,30 @@ const server = http.createServer(async (req, res) => {
   if (method === "POST" && pathname === "/conductores/nuevo") {
     try {
       await AddNewDriver(req, res);
+      return;
+    } catch (error) {
+      console.error("Error la agregar un nuevo conductor: ", error);
+      res.writeHead(500, { "Content-Type": "text/plain" });
+      res.end("Error interno del servidor");
+    }
+  }
+  // ===========================================
+  // CREAR UN NUEVO VEHICULO CON SU DIENIO ASOCIADO
+  // ===========================================
+  if (method === "GET" && pathname === "/vehiculos/nuevo") {
+    try {
+      await getFormularioVehiculo(req, res);
+      return;
+    } catch (error) {
+      console.error("Error al redireccionar al formulario: ", error);
+      res.writeHead(404, { "Content-Type": "text/plain" });
+      res.end("Error interno del servidor");
+    }
+  }
+  //Envio de datos del formulario al servidor
+  if (method === "POST" && pathname === "/vehiculos/nuevo") {
+    try {
+      await createVehicles(req, res);
       return;
     } catch (error) {
       console.error("Error la agregar un nuevo conductor: ", error);
