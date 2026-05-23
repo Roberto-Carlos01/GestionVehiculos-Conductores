@@ -100,6 +100,10 @@ async function showVehicles(req, res) {
     return;
   }
 }
+async function createVehicles() {
+  try {
+  } catch (errro) {}
+}
 
 module.exports = {
   showVehicles,

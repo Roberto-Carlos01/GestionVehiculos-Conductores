@@ -4,7 +4,12 @@ const querystring = require("querystring");
 const path = require("path");
 // pendiente
 const fs = require("fs");
-const { showDrivers, showHome } = require("./controllers/conductorController");
+const {
+  showDrivers,
+  showHome,
+  AddNewDriver,
+  getFormularioConductor,
+} = require("./controllers/conductorController");
 const { showVehicles } = require("./controllers/vehiculoController");
 
 //variables globales
@@ -31,6 +36,32 @@ const server = http.createServer(async (req, res) => {
       return;
     } catch (error) {
       console.error("Error al renderizar la página:", error);
+      res.writeHead(500, { "Content-Type": "text/plain" });
+      res.end("Error interno del servidor");
+    }
+  }
+
+  // ===========================================
+  // CREAR UN NUEVO CONDUCTOR
+  // ===========================================
+  //redireccionar al formulario
+  if (method === "GET" && pathname === "/conductores/nuevo") {
+    try {
+      await getFormularioConductor(req, res);
+      return;
+    } catch (error) {
+      console.error("Error al redireccionar al formulario: ", error);
+      res.writeHead(404, { "Content-Type": "text/plain" });
+      res.end("Error interno del servidor");
+    }
+  }
+  //Envio de datos del formulario al servidor
+  if (method === "POST" && pathname === "/conductores/nuevo") {
+    try {
+      await AddNewDriver(req, res);
+      return;
+    } catch (error) {
+      console.error("Error la agregar un nuevo conductor: ", error);
       res.writeHead(500, { "Content-Type": "text/plain" });
       res.end("Error interno del servidor");
     }

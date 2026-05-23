@@ -1,6 +1,9 @@
-const { getDrivers } = require("../models/conductorModel");
+const { getDrivers, createDriver } = require("../models/conductorModel");
 const { getVehiclesWithDrivers } = require("../models/vehiculoModel");
 const { generarListaVehiculos } = require("../controllers/vehiculoController");
+
+const url = require("url");
+const querystring = require("querystring");
 const path = require("path");
 const fs = require("fs");
 
@@ -110,7 +113,54 @@ async function showHome(req, res) {
   }
 }
 
+async function getFormularioConductor(req, res) {
+  try {
+    const template = getHTMLFormDriver();
+    res.writeHead(200, {
+      "Content-Type": "text/html; charset=utf-8",
+    });
+    res.end(template);
+    return;
+  } catch (error) {
+    console.error("Error al obtener el formulario: ", error);
+    res.writeHead(404, { "Content-Type": "text/plain" });
+    res.end("Error interno del servidor");
+  }
+}
+async function AddNewDriver(req, res) {
+  try {
+    let body = "";
+    req.on("data", (chunk) => {
+      body += chunk.toString();
+    });
+
+    req.on("end", async () => {
+      const driver = querystring.parse(body);
+      await createDriver(
+        driver.ci,
+        driver.nombres,
+        driver.apellidos,
+        driver.fecha_nacimiento,
+        driver.direccion,
+        driver.telefono,
+      );
+
+      res.writeHead(302, {
+        Location: "/",
+      });
+      res.end();
+    });
+    return;
+  } catch (error) {
+    console.error("Error al renderizar la página:", error);
+    res.writeHead(500, { "Content-Type": "text/plain" });
+    res.end("Error interno del servidor");
+  }
+}
+
 module.exports = {
   showDrivers,
   showHome,
+  AddNewDriver,
+  getFormularioConductor,
 };
