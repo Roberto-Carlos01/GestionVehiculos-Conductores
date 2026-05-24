@@ -24,65 +24,180 @@ function getHTML() {
   return fs.readFileSync(filePath, "utf8"); // lee el archivo como texto
 }
 
+// ============================================
+// LISTA DE VEHICULOS
+// ============================================
+
 function generarListaVehiculos(vehiculos) {
   if (vehiculos.length === 0) {
-    return '<p class="text-muted">No hay vehículos registrados aún.</p>';
+    return `
+
+      <div class="alert alert-light border shadow-sm rounded-4 text-center p-4">
+
+        <h4 class="mb-2">
+          🚗 No hay vehículos registrados
+        </h4>
+
+        <p class="text-muted mb-0">
+          Registra un nuevo vehículo para comenzar.
+        </p>
+
+      </div>
+    `;
   }
 
-  let html = '<div class="row">';
+  let html = `
+    <div class="row g-4">
+  `;
 
   vehiculos.forEach((vehiculo) => {
     html += `
-      <div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-4">
-        <div class="card h-100 shadow-sm border-0">
 
-          <div class="card-body">
+      <div class="col-12 col-md-6 col-xl-4">
 
-            <!-- TITULO -->
-            <h5 class="card-title text-primary">
-              ${vehiculo.marca} ${vehiculo.modelo}
-            </h5>
+        <div
+          class="card h-100 border-0 shadow-lg rounded-4 overflow-hidden"
+          style="
+            transition: 0.3s ease;
+            background: linear-gradient(to bottom, #ffffff, #f8fafc);
+          "
+        >
 
-            <!-- DUEÑO -->
-            <p class="card-text mb-2">
-              <strong>Propietario:</strong><br>
-              ${vehiculo.nombres} ${vehiculo.apellidos}<br>
-              <small class="text-muted">CI: ${vehiculo.ci}</small>
-            </p>
+          <!-- HEADER -->
+          <div
+            class="p-4 text-white"
+            style="
+              background: linear-gradient(to right, #111827, #374151);
+            "
+          >
 
-            <hr>
+            <div class="d-flex justify-content-between align-items-center">
 
-            <!-- DATOS VEHICULO -->
-            <p class="card-text">
-              <small>
-                <strong>Placa:</strong> ${vehiculo.placa}<br>
-                <strong>Año:</strong> ${vehiculo.anio}<br>
-                <strong>Color:</strong> ${vehiculo.color}
+              <div>
+
+                <h4 class="mb-1 fw-bold">
+                  🚘 ${vehiculo.marca}
+                </h4>
+
+                <h6 class="mb-0 opacity-75">
+                  ${vehiculo.modelo}
+                </h6>
+
+              </div>
+
+              <div
+                class="bg-white text-dark rounded-circle d-flex align-items-center justify-content-center"
+                style="
+                  width: 60px;
+                  height: 60px;
+                  font-size: 1.5rem;
+                "
+              >
+                <i class="bi bi-car-front-fill"></i>
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- BODY -->
+          <div class="card-body p-4">
+
+            <!-- PROPIETARIO -->
+            <div class="mb-4">
+
+              <small class="text-muted d-block mb-1">
+                👤 Propietario
               </small>
-            </p>
 
-            <!-- BOTONES -->
-            <div class="mt-3">
-              <a href="/vehiculos/editar?placa=${vehiculo.placa}" 
-                 class="btn btn-warning btn-sm me-2">
-                 Editar
+              <h5 class="fw-bold mb-1">
+                ${vehiculo.nombres} ${vehiculo.apellidos}
+              </h5>
+
+              <span class="badge bg-dark-subtle text-dark px-3 py-2 rounded-pill">
+                🪪 CI: ${vehiculo.ci}
+              </span>
+
+            </div>
+
+            <!-- DATOS -->
+            <div class="d-flex flex-column gap-3">
+
+              <div class="d-flex justify-content-between">
+
+                <span class="text-muted">
+                  🔖 Placa
+                </span>
+
+                <strong>
+                  ${vehiculo.placa}
+                </strong>
+
+              </div>
+
+              <div class="d-flex justify-content-between">
+
+                <span class="text-muted">
+                  📅 Año
+                </span>
+
+                <strong>
+                  ${vehiculo.anio}
+                </strong>
+
+              </div>
+
+              <div class="d-flex justify-content-between">
+
+                <span class="text-muted">
+                  🎨 Color
+                </span>
+
+                <strong>
+                  ${vehiculo.color}
+                </strong>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- FOOTER -->
+          <div class="card-footer bg-white border-0 p-4 pt-0">
+
+            <div class="d-flex gap-2">
+
+              <a
+                href="/vehiculos/editar?placa=${vehiculo.placa}"
+                class="btn btn-warning w-100 rounded-3 fw-semibold" style="background-color: #654865; color: white;"
+              >
+                <i class="bi bi-pencil-square"></i>
+                Editar
               </a>
 
-              <a href="/vehiculos/eliminar?placa=${vehiculo.placa}" 
-                 class="btn btn-danger btn-sm"
-                 onclick="return confirm('¿Eliminar vehículo?')">
-                 Eliminar
+              <a
+                href="/vehiculos/eliminar?placa=${vehiculo.placa}"
+                class="btn btn-danger w-100 rounded-3 fw-semibold"
+                onclick="return confirm('¿Eliminar vehículo?')"
+              >
+                <i class="bi bi-trash-fill"></i>
+                Eliminar
               </a>
+
             </div>
 
           </div>
 
         </div>
+
       </div>
     `;
   });
 
-  html += "</div>";
+  html += `
+    </div>
+  `;
 
   return html;
 }

@@ -22,50 +22,189 @@ function getHTMLFormDriver() {
   const filePath = path.join(__dirname, "../views/conductores", "form.html");
   return fs.readFileSync(filePath, "utf8");
 }
+// ============================================
+// LISTA DE CONDUCTORES
+// ============================================
+
 function generarListaDrivers(drivers) {
   if (drivers.length === 0) {
-    return '<p class="text-muted">No hay conductores registrados aún.</p>';
+    return `
+
+      <div class="alert alert-light border shadow-sm rounded-4 text-center p-4">
+
+        <h4 class="mb-2">
+          🚫 No hay conductores registrados
+        </h4>
+
+        <p class="text-muted mb-0">
+          Registra un nuevo conductor para comenzar.
+        </p>
+
+      </div>
+    `;
   }
 
-  let html = '<div class="row">';
+  let html = `
+    <div class="row g-4">
+  `;
 
   drivers.forEach((driver) => {
     html += `
-      <div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-4">
-        <div class="card h-100">
-          <div class="card-body">
 
-            <h5 class="card-title">
-              ${driver.nombres} ${driver.apellidos}
-            </h5>
+      <div class="col-12 col-md-6 col-xl-4">
 
-            <p class="card-text">
-              <strong>CI:</strong> ${driver.ci}<br>
-              <strong>Fecha Nacimiento:</strong> ${driver.fecha_nacimiento}<br>
-              <strong>Dirección:</strong> ${driver.direccion}<br>
-              <strong>Teléfono:</strong> ${driver.telefono}
-            </p>
+        <div
+          class="card h-100 border-0 shadow-lg rounded-4 overflow-hidden"
+          style="
+            transition: 0.3s ease;
+            background: linear-gradient(to bottom, #ffffff, #f8fafc);
+          "
+        >
 
-            <div class="mt-3">
-              <a href="/conductores/editar?id=${driver.idConductor}" 
-                 class="btn btn-warning btn-sm me-2">
-                 Editar
-              </a>
+          <!-- HEADER -->
+          <div
+            class="p-4 text-white"
+            style="
+              background: linear-gradient(to right, #0d6efd, #2563eb);
+            "
+          >
 
-              <a href="/conductores/eliminar?id=${driver.idConductor}" 
-                 class="btn btn-danger btn-sm"
-                 onclick="return confirm('¿Eliminar conductor?')">
-                 Eliminar
-              </a>
+            <div class="d-flex justify-content-between align-items-center">
+
+              <div>
+
+                <h4 class="mb-1 fw-bold">
+                  👨‍✈️ ${driver.nombres}
+                </h4>
+
+                <h6 class="mb-0 opacity-75">
+                  ${driver.apellidos}
+                </h6>
+
+              </div>
+
+              <div
+                class="bg-white text-primary rounded-circle d-flex align-items-center justify-content-center"
+                style="
+                  width: 60px;
+                  height: 60px;
+                  font-size: 1.5rem;
+                "
+              >
+                <i class="bi bi-person-fill"></i>
+              </div>
+
             </div>
 
           </div>
+
+          <!-- BODY -->
+          <div class="card-body p-4">
+
+            <div class="mb-3">
+
+              <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill">
+                🪪 CI: ${driver.ci}
+              </span>
+
+            </div>
+
+            <div class="d-flex flex-column gap-3">
+
+              <div class="d-flex align-items-start gap-3">
+
+                <div class="text-primary">
+                  <i class="bi bi-calendar-event-fill"></i>
+                </div>
+
+                <div>
+                  <small class="text-muted d-block">
+                    Fecha de nacimiento
+                  </small>
+
+                  <strong>
+                    ${driver.fecha_nacimiento}
+                  </strong>
+                </div>
+
+              </div>
+
+              <div class="d-flex align-items-start gap-3">
+
+                <div class="text-primary">
+                  <i class="bi bi-geo-alt-fill"></i>
+                </div>
+
+                <div>
+                  <small class="text-muted d-block">
+                    Dirección
+                  </small>
+
+                  <strong>
+                    ${driver.direccion}
+                  </strong>
+                </div>
+
+              </div>
+
+              <div class="d-flex align-items-start gap-3">
+
+                <div class="text-primary">
+                  <i class="bi bi-telephone-fill"></i>
+                </div>
+
+                <div>
+                  <small class="text-muted d-block">
+                    Teléfono
+                  </small>
+
+                  <strong>
+                    ${driver.telefono}
+                  </strong>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- FOOTER -->
+          <div class="card-footer bg-white border-0 p-4 pt-0">
+
+            <div class="d-flex gap-2">
+
+              <a
+                href="/conductores/editar?id=${driver.idConductor}"
+                class="btn btn-warning w-100 rounded-3 fw-semibold"
+                style="background-color: #4a4865; color: white;"
+              >
+                <i class="bi bi-pencil-square"></i>
+                Editar
+              </a>
+
+              <a
+                href="/conductores/eliminar?id=${driver.idConductor}"
+                class="btn btn-danger w-100 rounded-3 fw-semibold"
+                onclick="return confirm('¿Eliminar conductor?')"
+              >
+                <i class="bi bi-trash-fill"></i>
+                Eliminar
+              </a>
+
+            </div>
+
+          </div>
+
         </div>
+
       </div>
     `;
   });
 
-  html += "</div>";
+  html += `
+    </div>
+  `;
 
   return html;
 }
