@@ -11,6 +11,7 @@ const {
   getFormularioConductor,
   getFormularioUpdateHTML,
   updateDriver,
+  deleteDriverC,
 } = require("./controllers/conductorController");
 const {
   showVehicles,
@@ -18,6 +19,7 @@ const {
   createVehicles,
   getFormularioUpdateVehiculo,
   updateVehicle,
+  deleteVehicleC,
 } = require("./controllers/vehiculoController");
 const { createVehicle } = require("./models/vehiculoModel");
 
@@ -146,6 +148,34 @@ const server = http.createServer(async (req, res) => {
   if (method === "POST" && pathname === "/vehiculos/editar") {
     try {
       await updateVehicle(req, res);
+      return;
+    } catch (error) {
+      console.error("Error la agregar un nuevo conductor: ", error);
+      res.writeHead(500, { "Content-Type": "text/plain" });
+      res.end("Error interno del servidor");
+    }
+  }
+  // ===========================================
+  // ELIMINAR UN VEHICULO
+  // ===========================================
+  if (method === "GET" && pathname === "/vehiculos/eliminar") {
+    try {
+      const placa = parsedUrl.query.placa;
+      await deleteVehicleC(req, res, placa);
+      return;
+    } catch (error) {
+      console.error("Error la agregar un nuevo conductor: ", error);
+      res.writeHead(500, { "Content-Type": "text/plain" });
+      res.end("Error interno del servidor");
+    }
+  }
+  // ===========================================
+  // ELIMINAR UN CONDUCTOR
+  // ===========================================
+  if (method === "GET" && pathname === "/conductores/eliminar") {
+    try {
+      const id = parsedUrl.query.id;
+      await deleteDriverC(req, res, id);
       return;
     } catch (error) {
       console.error("Error la agregar un nuevo conductor: ", error);

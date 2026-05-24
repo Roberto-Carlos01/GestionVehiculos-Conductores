@@ -9,6 +9,7 @@ const {
   createVehicle,
   setVehicle,
   getVehicleForId,
+  deleteVehicle,
 } = require("../models/vehiculoModel");
 
 const { getDriverForId, getDriverForCi } = require("../models/conductorModel");
@@ -249,6 +250,20 @@ async function updateVehicle(req, res) {
     res.end("Error interno del servidor");
   }
 }
+async function deleteVehicleC(req, res, placa) {
+  try {
+    await deleteVehicle(placa);
+    res.writeHead(302, {
+      Location: "/",
+    });
+    res.end();
+    return;
+  } catch (error) {
+    console.error("Error al renderizar la página:", error);
+    res.writeHead(500, { "Content-Type": "text/plain" });
+    res.end("Error interno del servidor");
+  }
+}
 
 module.exports = {
   showVehicles,
@@ -257,4 +272,5 @@ module.exports = {
   getFormularioVehiculo,
   getFormularioUpdateVehiculo,
   updateVehicle,
+  deleteVehicleC,
 };

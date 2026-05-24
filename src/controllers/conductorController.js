@@ -3,6 +3,7 @@ const {
   createDriver,
   getDriverForId,
   setDriver,
+  deleteDriver,
 } = require("../models/conductorModel");
 const { getVehiclesWithDrivers } = require("../models/vehiculoModel");
 const { generarListaVehiculos } = require("../controllers/vehiculoController");
@@ -251,6 +252,20 @@ async function updateDriver(req, res) {
     res.end("Error interno del servidor");
   }
 }
+async function deleteDriverC(req, res, idDriver) {
+  try {
+    await deleteDriver(idDriver);
+    res.writeHead(302, {
+      Location: "/",
+    });
+    res.end();
+    return;
+  } catch (error) {
+    console.error("Error al renderizar la página:", error);
+    res.writeHead(500, { "Content-Type": "text/plain" });
+    res.end("Error interno del servidor");
+  }
+}
 
 module.exports = {
   showDrivers,
@@ -259,4 +274,5 @@ module.exports = {
   getFormularioConductor,
   getFormularioUpdateHTML,
   updateDriver,
+  deleteDriverC,
 };
