@@ -7,7 +7,11 @@ const {
   getvehicles,
   getVehiclesWithDrivers,
   createVehicle,
+  setVehicle,
+  getVehicleForId,
 } = require("../models/vehiculoModel");
+
+const { getDriverForId, getDriverForCi } = require("../models/conductorModel");
 
 function getHTMLFormVehicle() {
   const filePath = path.join(__dirname, "../views/vehiculos", "form.html");
@@ -108,15 +112,36 @@ async function showVehicles(req, res) {
 async function getFormularioVehiculo(req, res) {
   try {
     const template = getHTMLFormVehicle();
+
+    const htmlFinal = template
+
+      // Configuración general
+      .replace("{{ACTION}}", "/vehiculos/nuevo")
+      .replace("{{BOTON}}", "Registrar Vehículo")
+      .replace("{{TITULO}}", "🚗 Registrar Nuevo Vehículo")
+
+      // Campos vacíos
+      .replace("{{ID}}", "")
+      .replace("{{CI}}", "")
+      .replace("{{PLACA}}", "")
+      .replace("{{MARCA}}", "")
+      .replace("{{MODELO}}", "")
+      .replace("{{ANIO}}", "")
+      .replace("{{COLOR}}", "");
+
     res.writeHead(200, {
       "Content-Type": "text/html; charset=utf-8",
     });
-    res.end(template);
-    return;
+
+    return res.end(htmlFinal);
   } catch (error) {
-    console.error("Error al obtener el formulario: ", error);
-    res.writeHead(404, { "Content-Type": "text/plain" });
-    res.end("Error interno del servidor");
+    console.error("Error al obtener el formulario:", error);
+
+    res.writeHead(500, {
+      "Content-Type": "text/plain",
+    });
+
+    return res.end("Error interno del servidor");
   }
 }
 async function createVehicles(req, res) {
@@ -148,9 +173,88 @@ async function createVehicles(req, res) {
   }
 }
 
+//FORMULARIO PARA EDITAR DATOS
+async function getFormularioUpdateVehiculo(req, res, placa) {
+  try {
+    const template = getHTMLFormVehicle();
+    const vehiculo = await getVehicleForId(placa);
+    const driver = await getDriverForId(vehiculo.idConductor);
+
+    if (vehiculo) {
+      const htmlFinal = template
+
+        // Configuración general
+        .replace("{{ACTION}}", "/vehiculos/editar")
+        .replace("{{BOTON}}", "Actualizar Datos")
+        .replace("{{TITULO}}", "🚗 Actualizar Datos del Vehículo")
+
+        // Campos vacíos
+        .replace("{{PLACA}}", vehiculo.placa || "")
+        .replace("{{MARCA}}", vehiculo.marca || "")
+        .replace("{{MODELO}}", vehiculo.modelo || "")
+        .replace("{{ANIO}}", vehiculo.anio || "")
+        .replace("{{COLOR}}", vehiculo.color || "")
+        .replace("{{CI}}", driver.ci || "");
+
+      res.writeHead(200, {
+        "Content-Type": "text/html; charset=utf-8",
+      });
+      res.end(htmlFinal);
+      return;
+    } else {
+      console.log("Vehiculo no encontrado : ", placa);
+      res.writeHead(404, {
+        "Content-Type": "text/plain",
+      });
+
+      res.end("Vehiculo no encontrado");
+      return;
+    }
+  } catch (error) {
+    console.error("Error al obtener el formulario:", error);
+
+    res.writeHead(500, {
+      "Content-Type": "text/plain",
+    });
+    return res.end("Error interno del servidor");
+  }
+}
+
+async function updateVehicle(req, res) {
+  try {
+    let body = "";
+    req.on("data", (chunk) => {
+      body += chunk.toString();
+    });
+
+    req.on("end", async () => {
+      const Vehiculo = querystring.parse(body);
+      await setVehicle(
+        Vehiculo.placa,
+        Vehiculo.marca,
+        Vehiculo.modelo,
+        Vehiculo.anio,
+        Vehiculo.color,
+        Vehiculo.ci,
+      );
+      res.writeHead(302, {
+        Location: "/",
+      });
+      res.end();
+    });
+    return;
+  } catch (error) {
+    console.error("Error al renderizar la página:", error);
+    res.writeHead(500, { "Content-Type": "text/plain" });
+    res.end("Error interno del servidor");
+  }
+}
+
 module.exports = {
   showVehicles,
   generarListaVehiculos,
   createVehicles,
   getFormularioVehiculo,
+  getFormularioUpdateVehiculo,
+  updateVehicle,
 };

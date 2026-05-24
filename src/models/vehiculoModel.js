@@ -62,33 +62,77 @@ async function createVehicle(placa, marca, modelo, anio, color, ci) {
   }
 }
 async function searchVehicle(marca) {}
-async function setVehicle(placa, marca, modelo, anio, color, ci) {
+async function setVehicle(
+  placa,
+  marca,
+  modelo,
+  anio,
+  color,
+  ci
+) {
+
   try {
+
     const driver = await getDriverForCi(ci);
-    if (driver) {
-      const [result] = await conection.query(
-        "UPDATE vehiculo SET placa = ?  , marca = ?  , modelo = ?  , anio = ?  , color = ?  , idConductor = ? WHERE placa = ?  ",
-        [placa, marca, modelo, anio, color, driver.idConductor, placa],
-      );
-    } else {
+
+    console.log(
+      "DATOS DEL VEHICULO EN MODELO Y CONDUCTOR:",
+      driver
+    );
+
+    if (!driver) {
+
       console.error(
-        `❌ Error al buscar conductor con ci ${ci}:`,
-        error.message,
+        `❌ No se encontró conductor con CI ${ci}`
       );
+
+      return;
     }
+
+    const [result] = await conection.query(
+
+      `UPDATE vehiculo
+       SET
+         placa = ?,
+         marca = ?,
+         modelo = ?,
+         anio = ?,
+         color = ?,
+         idConductor = ?
+       WHERE placa = ?`,
+
+      [
+        placa,
+        marca,
+        modelo,
+        anio,
+        color,
+        driver.idConductor,
+        placa,
+      ]
+    );
 
     if (result.affectedRows > 0) {
-      console.log(`✅ Vehiculo ${marca} ${modelo} modificado exitosamente`);
-    } else {
+
       console.log(
-        `⚠️ No se encontró un Vehiculo con placa ${placa} y marca ${marca}`,
+        `✅ Vehiculo ${marca} ${modelo} modificado exitosamente`
+      );
+
+    } else {
+
+      console.log(
+        `⚠️ No se encontró un Vehiculo con placa ${placa}`
       );
     }
+
   } catch (error) {
-    console.error(`❌ Error al modificar al vehiculo ${placa}:`, error.message);
+
+    console.error(
+      `❌ Error al modificar al vehiculo ${placa}:`,
+      error.message
+    );
   }
 }
-
 async function getVehicleForId(placa) {
   try {
     const [rows] = await conection.query(

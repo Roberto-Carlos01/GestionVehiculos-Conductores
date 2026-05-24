@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Registrar Vehículo</title>
+    <title>Vehiculos</title>
 
     <!-- Bootstrap -->
     <link
@@ -67,7 +67,7 @@
           <div class="card vehicle-card">
             <!-- Header -->
             <div class="card-header bg-dark text-white text-center">
-              <h2 class="mb-2">🚗 Registro de Vehículos</h2>
+              <h2 class="mb-2">{{TITULO}}</h2>
 
               <p class="mb-0">Complete los datos del vehículo</p>
             </div>
@@ -81,7 +81,10 @@
                 el CI.
               </div>
 
-              <form action="/vehiculos/nuevo" method="POST">
+              <form action="{{ACTION}}" method="POST">
+                <!-- ID oculto -->
+                <input type="hidden" name="id" value="{{ID}}" />
+
                 <!-- CI -->
                 <div class="mb-3">
                   <label class="form-label fw-bold">
@@ -98,6 +101,7 @@
                       name="ci"
                       class="form-control"
                       placeholder="Ingrese el CI del conductor"
+                      value="{{CI}}"
                       required
                     />
                   </div>
@@ -117,6 +121,7 @@
                       name="placa"
                       class="form-control"
                       placeholder="Ej: 4587-ABC"
+                      value="{{PLACA}}"
                       required
                     />
                   </div>
@@ -136,6 +141,7 @@
                       name="marca"
                       class="form-control"
                       placeholder="Ej: Toyota"
+                      value="{{MARCA}}"
                       required
                     />
                   </div>
@@ -155,6 +161,7 @@
                       name="modelo"
                       class="form-control"
                       placeholder="Ej: Corolla"
+                      value="{{MODELO}}"
                       required
                     />
                   </div>
@@ -176,6 +183,7 @@
                       placeholder="Ej: 2020"
                       min="1950"
                       max="2035"
+                      value="{{ANIO}}"
                       required
                     />
                   </div>
@@ -195,6 +203,7 @@
                       name="color"
                       class="form-control"
                       placeholder="Ej: Blanco"
+                      value="{{COLOR}}"
                       required
                     />
                   </div>
@@ -205,18 +214,20 @@
                   <i class="bi bi-exclamation-triangle-fill"></i>
 
                   Asegúrese de ingresar correctamente el CI del conductor antes
-                  de registrar.
+                  de confirmar.
                 </div>
 
                 <!-- Buttons -->
                 <div class="d-flex gap-3 mt-4">
                   <button type="submit" class="btn btn-dark w-100">
                     <i class="bi bi-save"></i>
-                    Registrar Vehículo
+
+                    {{BOTON}}
                   </button>
 
                   <a href="/" class="btn btn-secondary w-100">
                     <i class="bi bi-arrow-left"></i>
+
                     Volver
                   </a>
                 </div>

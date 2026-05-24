@@ -9,11 +9,15 @@ const {
   showHome,
   AddNewDriver,
   getFormularioConductor,
+  getFormularioUpdateHTML,
+  updateDriver,
 } = require("./controllers/conductorController");
 const {
   showVehicles,
   getFormularioVehiculo,
   createVehicles,
+  getFormularioUpdateVehiculo,
+  updateVehicle,
 } = require("./controllers/vehiculoController");
 const { createVehicle } = require("./models/vehiculoModel");
 
@@ -88,6 +92,60 @@ const server = http.createServer(async (req, res) => {
   if (method === "POST" && pathname === "/vehiculos/nuevo") {
     try {
       await createVehicles(req, res);
+      return;
+    } catch (error) {
+      console.error("Error la agregar un nuevo conductor: ", error);
+      res.writeHead(500, { "Content-Type": "text/plain" });
+      res.end("Error interno del servidor");
+    }
+  }
+
+  // ===========================================
+  // ACTUALIZAR DATOS DE UN CONDUCTOR
+  // ===========================================
+  //REDIRECCIONAR AL FORMULARIO
+  if (method === "GET" && pathname === "/conductores/editar") {
+    try {
+      const idUser = parsedUrl.query.id;
+      await getFormularioUpdateHTML(req, res, idUser);
+      return;
+    } catch (error) {
+      console.error("Error la agregar un nuevo conductor: ", error);
+      res.writeHead(500, { "Content-Type": "text/plain" });
+      res.end("Error interno del servidor");
+    }
+  }
+  //ENVIAR DATOS PARA ACTUALIZAR
+  if (method === "POST" && pathname === "/conductores/editar") {
+    try {
+      await updateDriver(req, res);
+      return;
+    } catch (error) {
+      console.error("Error la agregar un nuevo conductor: ", error);
+      res.writeHead(500, { "Content-Type": "text/plain" });
+      res.end("Error interno del servidor");
+    }
+  }
+
+  // ===========================================
+  // ACTUALIZAR DATOS DE UN VEHICULO
+  // ===========================================
+  //REDIRECCIONAR AL FORMULARIO
+  if (method === "GET" && pathname === "/vehiculos/editar") {
+    try {
+      const placa = parsedUrl.query.placa;
+      await getFormularioUpdateVehiculo(req, res, placa);
+      return;
+    } catch (error) {
+      console.error("Error la agregar un nuevo conductor: ", error);
+      res.writeHead(500, { "Content-Type": "text/plain" });
+      res.end("Error interno del servidor");
+    }
+  }
+  //ACTUALIZAR DATOS DEL VEHICULO
+  if (method === "POST" && pathname === "/vehiculos/editar") {
+    try {
+      await updateVehicle(req, res);
       return;
     } catch (error) {
       console.error("Error la agregar un nuevo conductor: ", error);

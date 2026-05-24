@@ -1,4 +1,9 @@
-const { getDrivers, createDriver } = require("../models/conductorModel");
+const {
+  getDrivers,
+  createDriver,
+  getDriverForId,
+  setDriver,
+} = require("../models/conductorModel");
 const { getVehiclesWithDrivers } = require("../models/vehiculoModel");
 const { generarListaVehiculos } = require("../controllers/vehiculoController");
 
@@ -116,15 +121,36 @@ async function showHome(req, res) {
 async function getFormularioConductor(req, res) {
   try {
     const template = getHTMLFormDriver();
+
+    const htmlFinal = template
+
+      // Configuración general
+      .replace("{{ACTION}}", "/conductores/nuevo")
+      .replace("{{BOTON}}", "Registrar Conductor")
+      .replace("{{TITULO}}", "🚖 Registrar Nuevo Conductor")
+
+      // Campos vacíos
+      .replace("{{ID}}", "")
+      .replace("{{CI}}", "")
+      .replace("{{NOMBRES}}", "")
+      .replace("{{APELLIDOS}}", "")
+      .replace("{{FECHA_NACIMIENTO}}", "")
+      .replace("{{DIRECCION}}", "")
+      .replace("{{TELEFONO}}", "");
+
     res.writeHead(200, {
       "Content-Type": "text/html; charset=utf-8",
     });
-    res.end(template);
-    return;
+
+    return res.end(htmlFinal);
   } catch (error) {
-    console.error("Error al obtener el formulario: ", error);
-    res.writeHead(404, { "Content-Type": "text/plain" });
-    res.end("Error interno del servidor");
+    console.error("Error al obtener el formulario:", error);
+
+    res.writeHead(500, {
+      "Content-Type": "text/plain",
+    });
+
+    return res.end("Error interno del servidor");
   }
 }
 async function AddNewDriver(req, res) {
@@ -158,9 +184,79 @@ async function AddNewDriver(req, res) {
   }
 }
 
+// FUNCION PARA REDIRECCIONAR LA FORMULARIO
+async function getFormularioUpdateHTML(req, res, idConductor) {
+  try {
+    const template = getHTMLFormDriver();
+    const driver = await getDriverForId(idConductor);
+    const htmlFinal = template
+
+      // Configuración general
+      .replace("{{ACTION}}", `/conductores/editar`)
+      .replace("{{BOTON}}", "Actualizar Conductor")
+      .replace("{{TITULO}}", "🚖 Actualizar Conductor")
+
+      // Campos vacíos
+      .replace("{{ID}}", idConductor || "")
+      .replace("{{CI}}", driver.ci || "")
+      .replace("{{NOMBRES}}", driver.nombres || "")
+      .replace("{{APELLIDOS}}", driver.apellidos || "")
+      .replace("{{FECHA_NACIMIENTO}}", driver.fecha_nacimiento || "")
+      .replace("{{DIRECCION}}", driver.direccion || "")
+      .replace("{{TELEFONO}}", driver.telefono || "");
+
+    res.writeHead(200, {
+      "Content-Type": "text/html; charset=utf-8",
+    });
+
+    return res.end(htmlFinal);
+  } catch (error) {
+    console.error("Error al obtener el formulario:", error);
+
+    res.writeHead(500, {
+      "Content-Type": "text/plain",
+    });
+
+    return res.end("Error interno del servidor");
+  }
+}
+// FUNCION PARA EDITAR DATOS DE UN CONDUCTOR
+async function updateDriver(req, res) {
+  try {
+    let body = "";
+    req.on("data", (chunk) => {
+      body = body + chunk.toString();
+    });
+
+    req.on("end", async () => {
+      const datos = querystring.parse(body);
+      await setDriver(
+        datos.id,
+        datos.ci,
+        datos.nombres,
+        datos.apellidos,
+        datos.fecha_nacimiento,
+        datos.direccion,
+        datos.telefono,
+      );
+      res.writeHead(302, {
+        Location: "/",
+      });
+      res.end();
+    });
+    return;
+  } catch (error) {
+    console.error("Error al renderizar la página:", error);
+    res.writeHead(500, { "Content-Type": "text/plain" });
+    res.end("Error interno del servidor");
+  }
+}
+
 module.exports = {
   showDrivers,
   showHome,
   AddNewDriver,
   getFormularioConductor,
+  getFormularioUpdateHTML,
+  updateDriver,
 };
